@@ -1,0 +1,336 @@
+{% extends "feeds/layout.html" %}
+
+{% block title %}<title>Index - CS50 Feeds</title>{% endblock %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+        <div id="authenticated-view" style="text-align: center;">
+            <div id="top-view">
+                <h1 style="font-size: 50px; text-align: center;">Feeds</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_modal">+ New Feed</button>
+            </div>
+            <br>
+            <div id="active-view" style="display: block;">
+                <h2 style="font-size: 42px; text-align: center;">Active Feeds</h2>
+                {% for feed in active_feeds %}
+                    <p>
+                        <div class="d-flex justify-content-center">
+                            <div class="card" style="width: 88rem;">
+                                <h3 class="card-title" style="margin: 18px 18px 0 18px;">{{ feed.title }}</h3>
+                                <div class="card-body">
+                                    <a class="card-text" href="{{ feed.home_page_url }}">{{ feed.home_page_url }}</a>
+                                    {% if feed.user_comment %}
+                                        <p class="card-text" style="color: grey;">{{ feed.user_comment }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer">
+                                    <a class="btn btn-primary" href="{% url 'feed' feed_id=feed.id %}">View</a>
+                                    <a class="btn btn-danger" href="{% url 'feed_delete' feed_id=feed.id %}">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </p>
+                {% empty %}
+                    <p>
+                        No Active Feeds!
+                    </p>
+                {% endfor %}
+                <br>
+                <button type="button" class="btn btn-warning" id="inactive_button">View Inactive Feeds</button>
+            </div>
+            <div id="inactive-view" style="display: none;">
+                <h2 style="font-size: 42px; text-align: center;">Inactive Feeds</h2>
+                {% for feed in inactive_feeds %}
+                    <p>
+                        <div class="d-flex justify-content-center">
+                            <div class="card" style="width: 88rem;">
+                                <h2 class="card-title" style="color: black; margin: 18px 18px 0 18px;">{{ feed.title }}</h2>
+                                <div class="card-body">
+                                    <a class="card-text" href="{{ feed.home_page_url }}">{{ feed.home_page_url }}</a>
+                                    {% if feed.user_comment %}
+                                        <p class="card-text" style="color: grey;">{{ feed.user_comment }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer">
+                                    <a class="btn btn-primary" href="{% url 'feed' feed_id=feed.id %}">View</a>
+                                    <a class="btn btn-danger" href="{% url 'feed_delete' feed_id=feed.id %}">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </p>
+                {% empty %}
+                    <p>
+                        No Inactive Feeds!
+                    </p>
+                {% endfor %}
+                <br>
+                <button type="button" class="btn btn-warning" id="active_button">View Active Feeds</button>
+            </div>
+        </div>
+        <div class="modal fade" tabindex="-1" id="new_modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New Feed</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="new_form">
+                            {% csrf_token %}
+                            <p class="form-group">
+                                <label for="new_title">Title</label>
+                                <input type="text" class="form-control" id="new_title" placeholder="Enter Title" maxlength="64" required>
+                            </p>
+                            <p class="form-group">
+                                <label for="new_home">Homepage URL</label>
+                                <input type="url" class="form-control" id="new_home" placeholder="Enter Homepage URL" maxlength="500" required>
+                            </p>
+                            <p class="form-group">
+                                <label for="new_feed">Feed URL</label>
+                                <input type="url" class="form-control" id="new_feed" placeholder="Enter Feed URL" maxlength="500" required>
+                            </p>
+                            <p class="form-group">
+                                <label for="confirm">Description</label>
+                                <textarea type="text" class="form-control" id="new_description" placeholder="Enter Optional Description" maxlength="280"></textarea>
+                            </p>
+                            <p class="form-group">
+                                <label for="new_comment">Comment</label>
+                                <textarea type="text" class="form-control" id="new_comment" placeholder="Enter Optional Comment" maxlength="140"></textarea>
+                            </p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="new_button">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div id="unauthenticated-view" style="text-align: center;">
+            <h1 style="font-size: 50px;">Welcome</h1>
+            <p style="font-size: 18px;">
+                Hello, World! This is CS50 Feeds, a Web Feed Reader Application that Only Brings What You Want and Nothing More!
+            </p>
+            <h2 style="font-size: 32px;">Feeds?</h2>
+            <p style="font-size: 18px;">
+                Many websites support their own web feed, a data format that contains infomation on their content: Blogs have Posts, Youtube Channels have Videos, etc.
+            </p>
+            <h2 style="font-size: 32px;">Readers?</h2>
+            <p style="font-size: 18px;">
+                Many readers gathers all the feed infomation that you want into one place; however, our reader is desgned to support your web journey and encourage a bit of randomness.
+            </p>
+            <h2 style="font-size: 32px;">Applications?</h2>
+            <p style="font-size: 18px;">
+                Even if you are not a programmer, you can "use" this application by registering or logging in and exploring the features we offer with our intuitive user interface.
+            </p>
+            <hr style="color: lightgrey;">
+            <p style="font-size: 18px;">
+                Start your Web Journey: <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#register_modal">Register Here</button> or <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#login_modal">Login Here</button>
+            </p>
+            <p style="font-size: 18px;">
+                This was CS50 Feeds, we hope you enjoy the application!
+            </p>
+            <hr style="color: lightgrey;">
+            <p style="font-size: 18px;">
+                This is a Python web application! If you are interested, then consider taking <a href="https://cs50.harvard.edu/python/2022/">CS50's Introduction to Programming with Python</a>!
+            </p>
+            <p style="font-size: 18px;">
+                How did we make this application? Check out <a href="https://cs50.harvard.edu/web/2020/">CS50's Web Programming with Python and JavaScript</a>!
+            </p>
+            <p style="font-size: 18px;">
+                Wanna see the Python and JavaScript Codebase for CS50 Feeds? Check out <a href="#">Github Repository for CS50 Feeds</a>!
+            </p>
+            <p style="font-size: 18px;">
+                Note that our journey for CS50 Feeds continues!
+            </p>
+            <p style="font-size: 18px;">
+                Foo! Bar! Baz!
+            </p>
+        </div>
+        <div class="modal fade" tabindex="-1" id="register_modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Register</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="register_form">
+                            {% csrf_token %}
+                            <p class="form-group">
+                                <label for="register_username">Username</label>
+                                <input type="text" class="form-control" id="register_username" placeholder="Enter Username" required>
+                            </p>
+                            <p class="form-group">
+                                <label for="email">Email</label>
+                                <input type="text" class="form-control" id="register_email" placeholder="Enter Email" required>
+                            </p>
+                            <p class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="register_password" placeholder="Enter Password" required>
+                            </p>
+                            <p class="form-group">
+                                <label for="confirm">Confirm Password</label>
+                                <input type="password" class="form-control" id="register_confirm" placeholder="Confirm Password" required>
+                            </p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="register_button">Register</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" tabindex="-1" id="login_modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Log In</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="login_form">
+                            {% csrf_token %}
+                            <p class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="login_username" placeholder="Enter Username" required>
+                            </p>
+                            <p class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="login_password" placeholder="Enter Password" required>
+                            </p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="login_button">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        let new_button = document.getElementById('new_button');
+        if (new_button != null) {
+            new_button.onclick = () => {
+                let title = document.querySelector('#new_title').value;
+                let home_page_url = document.querySelector('#new_home').value;
+                let feed_url = document.querySelector('#new_feed').value;
+                let description = document.querySelector('#new_description').value;
+                let comment = document.querySelector('#new_comment').value;
+                if (!title || !home_page_url || !feed_url) {
+                    alert('Title, Homepage URL, and Feed URL are required!');
+                    return;
+                }
+                let csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                fetch('/new_feed', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrf_token
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        home_page_url: home_page_url,
+                        feed_url: feed_url,
+                        description: description,
+                        comment: comment
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.is_feed) {
+                        window.location.reload();
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            }
+        }
+        let inactive_button = document.getElementById('inactive_button');
+        if (inactive_button != null) {
+            inactive_button.onclick = () => {
+                document.querySelector('#active-view').style.display = 'none';
+                document.querySelector('#inactive-view').style.display = 'block';
+            }
+        }
+        let active_button = document.getElementById('active_button');
+        if (active_button != null) {
+            active_button.onclick = () => {
+                document.querySelector('#active-view').style.display = 'block';
+                document.querySelector('#inactive-view').style.display = 'none';
+            }
+        }
+        let register_button = document.getElementById('register_button');
+        if (register_button != null) {
+            register_button.onclick = () => {
+                let username = document.querySelector('#register_username').value;
+                let email = document.querySelector('#register_email').value;
+                let password = document.querySelector('#register_password').value;
+                let confirmation = document.querySelector('#register_confirm').value;
+                if (!username || !email || !password || !confirmation) {
+                    alert('All registration fields needed!');
+                    return;
+                }
+                if (password != confirmation) {
+                    alert('Password and Confirmation do not match!');
+                    return;
+                }
+                let csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrf_token
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.is_authenticated) {
+                        window.location.reload();
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            }
+        }
+        let login_button = document.getElementById('login_button');
+        if (login_button != null) {
+            login_button.onclick = () => {
+                let username = document.querySelector('#login_username').value;
+                let password = document.querySelector('#login_password').value;
+                if (!username || !password) {
+                    alert('All login fields needed!');
+                    return;
+                }
+                let csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrf_token
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.is_authenticated) {
+                        window.location.reload();
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            }
+        }
+    </script>
+{% endblock %}
