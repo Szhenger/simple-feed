@@ -1,0 +1,35 @@
+{% extends "feeds/layout.html" %}
+
+{% block title %}<title>{{ item.title }} - CS50 Feeds</title>{% endblock %}
+
+{% block style %}
+    <style>
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div id="item-view" style="text-align: center;">
+        <p id="item-header">
+            <h1 style="font-size: 50px;">{{ item.title }}</h1>
+            <a href="{% url 'feed' feed_id=item.feed.id %}">{{ item.feed.title }}</a>
+            <a href="{{ item.url }}">{{ item.url }}</a>
+        </p>
+        {% if item.content %}
+            <p class="card-text" style="color: grey;">{{ item.content | safe }}</p>
+        {% endif %}
+        {% if item.date_published %}
+            <p id="item-date-published">{{ item.date_published }}</p>
+        {% endif %}
+        {% if user.is_authenticated %}
+            {% if user.id == item.feed.user.id %}
+                <a class="btn btn-primary" href="{% url 'feed' feed_id=item.feed.id %}">Feed</a>
+                <a class="btn btn-danger" href="{% url 'item_delete' item_id=item.id %}">Delete</a>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
