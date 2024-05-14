@@ -1,0 +1,99 @@
+{% extends "feeds/layout.html" %}
+
+{% block title %}<title>{{ profile.user.username }} - CS50 Feeds</title>{% endblock %}
+
+{% block body %}
+    <div id="profile-view">
+        <h1 style="margin: 18px;">{{ profile.user.username }}</h1>
+        <div id="profile-descriptions" style="margin-left: 18px;">
+            <p id="profile-professional">{{ profile.professional }}</p>
+            <p id="profile-hobbies">{{ profile.hobbies }}</p>
+            <p id="profile-interests">{{ profile.interests }}</p>
+        </div>
+        <div id="profile-footer" style="margin-left: 18px;">
+            {% if user.is_authenticated %}
+                {% if user.id == profile.user.id %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_modal">Edit</button>
+                    {% if profile.is_public %}
+                        <a type="button" class="btn btn-success" href="{% url 'profile_public' profile_id=profile.id %}">Private</a>
+                    {% else %}
+                        <a type="button" class="btn btn-danger" href="{% url 'profile_public' profile_id=profile.id %}">Public</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="edit_modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new_form">
+                        {% csrf_token %}
+                        <p class="form-group">
+                            <label for="profile_professional">Professional Description</label>
+                            <textarea type="text" class="form-control" id="profile_professional" placeholder="Enter Professional Description" maxlength="280">{{ profile.professional }}</textarea>
+                        </p>
+                        <p class="form-group">
+                            <label for="profile_hobbies">Hobbies Description</label>
+                            <textarea type="text" class="form-control" id="profile_hobbies" placeholder="Enter Hobbies Description" maxlength="280">{{ profile.hobbies }}</textarea>
+                        </p>
+                        <p class="form-group">
+                            <label for="profile_interests">Interests Description</label>
+                            <textarea type="text" class="form-control" id="profile_interests" placeholder="Enter Interest Description" maxlength="280">{{ profile.interests }}</textarea>
+                        </p>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="edit_button">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        document.getElementById('edit_button').onclick = () => {
+            let professional = document.querySelector('#profile_professional').value;
+            let hobbies = document.querySelector('#profile_hobbies').value;
+            let interests = document.querySelector('#profile_interests').value;
+            if (!professional && !hobbies && !interests) {
+                alert('Require that at least one of the fields to be filled!');
+                return;
+            }
+            let csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            fetch('/profile_edit', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrf_token
+                    },
+                    body: JSON.stringify({
+                        professional: professional,
+                        hobbies: hobbies,
+                        interests: interests
+                    })
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.querySelector('#profile-professional').innerHTML = result.data.professional;
+                document.querySelector('#profile-hobbies').innerHTML = result.data.hobbies;
+                document.querySelector('#profile-interests').innerHTML = result.data.interests;
+
+                const modal = document.querySelector('#edit_modal')
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                modal.setAttribute('style', 'display: none');
+
+                const modal_backdrops = document.getElementsByClassName('modal-backdrop');
+                for(let i = 0; i < modal_backdrops.length; i++) {
+                    document.body.removeChild(modal_backdrops[i]);
+                }
+            });
+        }
+    </script>
+{% endblock%}
