@@ -1,14 +1,14 @@
 # CS50 Feeds
 
-#### Public:
+#### Public
 
 Since CS50's Intoduction to Computer Science and Web Programming with Python and JavaScript are running for 2024, I have only left the source files for CS50 Feeds.
 
-#### Distinctiveness and Complexity:
+#### Distinctiveness and Complexity
 
 In CS50's Web Programming with Python and JavaScript, we have learned how to make web applications with the Python Django Back-End Web Framework and JavaScript Front-End Web Framework; however, to gain experience with these technologies, Projects 0 through 4 required distinct and complex feature of these frameworks to be used to achieve interesting applications that are ubiquitous to modern society in the 21st century. With respect to the themes of CS50's Introduction to Computer Science and Web Programming with Python and JavaScript of computer science and society, I have taken Projects 0 through 4 and created a web application that integrates some features of these applications ported to the context of addressing a fundamental issue that arises in the infomation age. The Internet contains zetabytes of infomation; however, the human capacity to parse infomation remains fixed. Therefore, the Final Project is a perfect opportunity to create a simplified web feed reader application, allowing people to subscribe to many web feeds of websites and gathers the infomation of these websites for a simple viewing experience. If the Internet made possible for Wikipedia, Commerce, Mail, Networking Applications, then Feed Readers are the next great abstraction that makes the Infomation Age more accessible to many more people. In particular, my application enables users to make profiles about themselves, feeds to subscribe to web feeds, and randomly check out other feeds of different users. The implementation of these features borrows from the concepts introduced in Projects 0 through 4; however, designed to solve ultimately different problems. The purpose of the Feeds application is to bring infomation from the Internet to the user; however, this requires a complex system that makes interfaces and databases to store data on users and their profiles, feeds and their methods of interaction, and items to populate feeds over the Internet.
 
-#### Description:
+#### Description
 
 In CS50's Introduction to Computer Science, we learned how to program software; however, introduced many computer science technologies that are used in modern software workflows such C, Arrays, Algorithms, Memory, and Data Structures. These are abstractions that provide more machinery to solve problems; hence, choosing a web application that utilizes the tools of Python and JavaScript are important. CS50 Feeds can be simply viewed with the Python Django Models, Views, Templates (MVT) Framework for the Back-End Server and JavaScript Event-Driven Framework for the Front-End Client with BootStrap providing third-party styling for the HTML structure of the application.
 
