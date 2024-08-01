@@ -11,7 +11,6 @@ from .util import get_items
 
 # Create your views here.
 
-
 def index_view(request):
     if request.user.is_authenticated:
 
