@@ -2,10 +2,14 @@ import feedparser, schedule, threading
 from datetime import datetime, timedelta
 from .models import Feed, Item
 
-# Gets the items of the feeds
-
+# Create your utilty functions here.
 
 def get_items(feed):
+    """
+    Input: feed of class Feed 
+    Side Effect: Inserts all items into feed
+    Output: None
+    """
     reader = feedparser.parse(feed.feed_url)
     num_items = len(reader.entries)
 
@@ -28,8 +32,13 @@ def get_items(feed):
         )
         item.save()
 
-
+# Updates the items of the feeds
 def update_feeds():
+    """
+    Input: None
+    Side Effect: Updates every feed of class Feed 
+    Output: None
+    """
     feeds = Feed.objects.all()
 
     # Add new items of the feed as Item instances
@@ -58,6 +67,11 @@ def update_feeds():
 
 
 def queue_tasks():
+    """
+    Input: None
+    Side Effect: Runs queued tasks
+    Output: None
+    """
     while True:
         schedule.run_pending()
 
