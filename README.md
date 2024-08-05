@@ -21,5 +21,3 @@ With respect to the Profile models, I have designed descriptions field to enumer
 With regards to the public and active fields of the Profile and Feed instances, user can private their instance from public view via the random view, which allows people to view their own feeds or others at random.
 
 Many users will find that the design and implentation is minimal, but the vision of the application is to grow to include more interactivity per user in the future with new features that may incorperate AI technologies.
-#### Run
-In order to use Feeds, we just need to run the application as a standard Python Django project.
