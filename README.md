@@ -133,5 +133,4 @@ This tech stack allows `feeds` to offer a responsive, secure, and scalable platf
 
 * Security Considerations:
     * The application uses Django’s built-in user authentication system, ensuring that sensitive data like passwords are hashed.
-The use of @login_required decorators ensures that only authenticated users can access certain views, such as creating, editing, or deleting feeds.
     * The use of `@login_required` decorators ensures that only authenticated users can access certain views, such as creating, editing, or deleting feeds.
