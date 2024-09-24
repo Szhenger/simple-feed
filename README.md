@@ -75,4 +75,65 @@ This tech stack allows `feeds` to offer a responsive, secure, and scalable platf
 
 ## Specification
 
-TODO
+#### Input and Output:
+* Input: Users interact with the application via a web interface to create profiles, subscribe to feeds, and manage feed items.
+    * Users provide information such as RSS feed URLs, profile descriptions, and preferences for feed visibility (public/private).
+    * JavaScript modals are used to gather user input dynamically for profile creation, feed subscriptions, and editing.
+* Output: The app retrieves, parses, and displays RSS feed content in an organized format. Profile pages display users' feeds and their latest items, allowing for easy consumption of web content.
+    * Feed data is automatically updated at a scheduled time (7:30 AM), ensuring fresh content for users.
+
+#### Features:
+* User Authentication:
+    * Registration: New users can register via the register_view which handles registration through a POST request, capturing the username, email, and password and creating a new user in the database.
+    * Login: The login_view authenticates users, allowing them to log in with their credentials. A JavaScript POST fetch captures the login data.
+    * Logout: The logout_view logs users out and redirects them to the homepage.
+* Feed Management:
+    * Feed Subscription: Users can add new RSS feeds through the new_feed_view. They provide details like the feed's title, URL, description, and comments via a JavaScript POST request. The app fetches and stores the feed items using the get_items() function from util.py.
+    * Feed Display: The feed_view renders the items of a feed if the feed is public or owned by the requesting user.
+    * Feed Editing: Users can edit their feed information (title, URLs, description) via the feed_edit_view. Feed details are sent via a POST request, and changes are saved only if the user owns the feed.
+    * Feed Activation/Deactivation: Users can toggle a feed’s active status (whether the feed should be updated) using feed_active_view.
+* Public/Private Toggle: Users can toggle their feeds between public and private using feed_public_view, controlling whether other users can view the feed.
+* Feed Deletion: Users can delete their feeds using feed_delete_view. If the user owns the feed, it is permanently removed.
+* Profile Management:
+    * Profile Display: The profile_view renders the user's profile page. Users can view their profile or other users' profiles if public.
+    * Profile Editing: Users can update their profile information (professional info, hobbies, interests) via the profile_edit_view. If no profile exists, a new profile is created for the user.
+    * Profile Public/Private Toggle: Using profile_public_view, users can toggle the visibility of their profile, deciding if other users can view it.
+* Item Management:
+    * Item Display: The item_view renders a detailed view of a feed item. Users can access items from public feeds or their own feeds.
+    * Item Deletion: Users can delete items from their feed using item_delete_view, ensuring only feed owners can perform this action.
+* Random Feed Exploration:
+    * Random Feed: The random_view allows users to discover random public feeds from other users. It selects and displays a random feed from the database that has its is_public flag set to True.
+
+* Views:
+    * `index_view`: The homepage view that displays the authenticated user's active and inactive feeds.
+    * `register_view`: Handles user registration.
+    * `login_view`: Authenticates and logs in users.
+    * `logout_view`: Logs out the current user.
+    * `new_feed_view`: Allows users to create a new RSS feed.
+    * `profile_view`: Displays a user's profile and their feeds.
+    * `profile_edit_view`: Allows users to edit their profile.
+    * `profile_public_view`: Toggles the visibility of the user's profile.
+    * `feed_view`: Displays the items of a feed.
+    * `feed_edit_view`: Allows users to edit an existing feed.
+    * `feed_delete_view`: Deletes a user's feed.
+    * `feed_active_view`: Toggles the active status of a feed.
+    * `feed_public_view`: Toggles the public visibility of a feed.
+    * `item_view`: Displays a feed item in detail.
+    * `item_delete_view`: Deletes an item from the feed.
+    * `random_view`: Displays a random public feed.
+
+* Command-Line Execution (for Feed Updates):
+    * The application’s feed update process runs automatically using Python’s schedule and threading libraries. It updates all feeds daily at 7:30 AM, but can also be manually triggered via Django management commands for testing purposes.
+
+* Edge Cases:
+    * Invalid RSS Feeds: The app validates the RSS URL and displays an error if the feed cannot be parsed or if the URL is invalid.
+    * Feed Ownership: Users can only edit, delete, or toggle visibility on their own feeds and profiles.
+    * Public/Private Feeds: Users can set their feeds as public or private. Public feeds are visible to all, while private feeds are only accessible by the feed’s owner.
+
+* Performance Considerations:
+    * Feeds are updated on a schedule, running in the background via separate threads to ensure the main application remains responsive. The database queries are optimized to ensure minimal latency during feed retrieval and updates.
+
+* Security Considerations:
+    * The application uses Django’s built-in user authentication system, ensuring that sensitive data like passwords are hashed.
+The use of @login_required decorators ensures that only authenticated users can access certain views, such as creating, editing, or deleting feeds.
+    * The use of `@login_required` decorators ensures that only authenticated users can access certain views, such as creating, editing, or deleting feeds.
