@@ -18,14 +18,14 @@ The project builds on concepts from [CS50’s Web Programming with Python and Ja
 
 #### Python & Django (Back-End Framework):
 * Django is a high-level Python web framework that promotes rapid development and clean, pragmatic design. The Django Model-View-  Template (MVT) architecture is used to handle data storage, business logic, and user interface rendering:
-    * Models: Define the data structure (e.g., User, Profile, Feed, Item). These models map directly to the database tables, managing user profiles, subscriptions, and feed items.
-    * Views: Handle requests and responses. Views like index_view, profile_view, and feed_view dynamically render pages based on user  input and data from the models.
+    * Models: Define the data structure (e.g., `User`, `Profile`, `Feed`, `Item`). These models map directly to the database tables, managing user profiles, subscriptions, and feed items.
+    * Views: Handle requests and responses. Views like `index_view`, `profile_view`, and `feed_view` dynamically render pages based on user  input and data from the models.
     * Templates: Use Django’s templating language to dynamically generate HTML content, ensuring that each user gets a personalized view of their feeds and profiles.
 * Django's built-in authentication system (using AbstractUser) handles user registration, login, logout, and password hashing, ensuring security for user data.
 
 #### JavaScript (Frant-End Interactivity):
 * JavaScript is used to make the application interactive and responsive. It powers dynamic elements like Bootstrap modals for creating and editing profiles and feeds, improving the user experience without requiring full-page reloads.
-    * JavaScript is essential for handling event-driven actions, such as user form submissions (via fetch API) and updating the User Interface (UI) based on server responses.
+    * JavaScript is essential for handling event-driven actions, such as user form submissions (via fetch API) and updating the user interface (UI) based on server responses.
     * Single-Page Application (SPA) elements are implemented on the index page for smooth, uninterrupted navigation between feeds and items, making the user experience more fluid.
  
 #### Bootstrap (Responsive User Interface):
@@ -39,7 +39,7 @@ The project builds on concepts from [CS50’s Web Programming with Python and Ja
 * Once parsed, the feed data is stored in the database as Item instances, associated with a user’s subscribed feed.
 
 #### Task Scheduling with schedule and threading
-* Python’s schedule library is used to automate the process of fetching and updating RSS feeds. The app is set up to update all user feeds daily at 7:30 AM, ensuring the content stays up-to-date without requiring manual refreshes.
+* Python’s schedule library is used to automate the process of fetching and updating RSS feeds. The app is set up to update all user feeds daily at 07:30, ensuring the content stays up-to-date without requiring manual refreshes.
 * Threading is employed to run the scheduled tasks in the background, preventing the scheduled jobs from blocking the main application flow. This allows the application to continue serving users while feeds are being updated.
 
 #### Database (SQLite / PostgreSQL)
@@ -51,7 +51,7 @@ The project builds on concepts from [CS50’s Web Programming with Python and Ja
 
 * Back-End (Python & Django):
     * Core models include User, Profile, Feed, and Item. Users can create profiles and subscribe to RSS feeds, which are parsed and stored as Item instances.
-    * Util.py manages feed retrieval using feedparser, while the schedule and threading libraries ensure feeds are updated daily at 7:30 AM.
+    * Util.py manages feed retrieval using feedparser, while the schedule and threading libraries ensure feeds are updated daily at 07:30.
 * Front-End (JavaScript & Bootstrap):
     * JavaScript handles dynamic content, such as creating and editing profiles and feeds through Bootstrap modals.
     * A single-page application structure is used to enhance interactivity without page reloads.
@@ -66,7 +66,7 @@ The project builds on concepts from [CS50’s Web Programming with Python and Ja
 * Back-End Logic:
     * Django processes the user requests. For example, when a new feed is added, Django validates the feed URL, stores the data in the database, and invokes feedparser to fetch items from the feed.
 * Feed Parsing and Scheduling:
-    * After a user subscribes to a feed, the back-end uses the feedparser library to extract content from the RSS URL. Then, the schedule and threading libraries ensure that feeds are updated at 7:30 AM daily without user intervention.
+    * After a user subscribes to a feed, the back-end uses the feedparser library to extract content from the RSS URL. Then, the schedule and threading libraries ensure that feeds are updated at 07:30 daily without user intervention.
 * Content Rendering:
     * The content (e.g., user profiles, feeds, and items) is dynamically rendered using Django templates, providing users with an up-to-date view of their feeds. Public and private feeds are managed through Django views, ensuring that only authorized users can view private feeds.
 
@@ -78,7 +78,7 @@ This tech stack allows `feeds` to offer a responsive, secure, and scalable platf
     * Users provide information such as RSS feed URLs, profile descriptions, and preferences for feed visibility (public/private).
     * JavaScript modals are used to gather user input dynamically for profile creation, feed subscriptions, and editing.
 * Output: The app retrieves, parses, and displays RSS feed content in an organized format. Profile pages display users' feeds and their latest items, allowing for easy consumption of web content.
-    * Feed data is automatically updated at a scheduled time (7:30 AM), ensuring fresh content for users.
+    * Feed data is automatically updated at a scheduled time (07:30), ensuring fresh content for users.
 
 #### Features:
 * User Authentication:
@@ -121,7 +121,7 @@ This tech stack allows `feeds` to offer a responsive, secure, and scalable platf
     * `random_view`: Displays a random public feed.
 
 * Command-Line Execution (for Feed Updates):
-    * The application’s feed update process runs automatically using Python’s schedule and threading libraries. It updates all feeds daily at 7:30 AM, but can also be manually triggered via Django management commands for testing purposes.
+    * The application’s feed update process runs automatically using Python’s schedule and threading libraries. It updates all feeds daily at 07:30, but can also be manually triggered via Django management commands for testing purposes.
 
 * Edge Cases:
     * Invalid RSS Feeds: The app validates the RSS URL and displays an error if the feed cannot be parsed or if the URL is invalid.
