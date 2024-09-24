@@ -25,7 +25,7 @@ The project builds on concepts from [CS50’s Web Programming with Python and Ja
 
 #### JavaScript (Frant-End Interactivity):
 * JavaScript is used to make the application interactive and responsive. It powers dynamic elements like Bootstrap modals for creating and editing profiles and feeds, improving the user experience without requiring full-page reloads.
-    * JavaScript is essential for handling event-driven actions, such as user form submissions (via fetch API) and updating the UI based on server responses.
+    * JavaScript is essential for handling event-driven actions, such as user form submissions (via fetch API) and updating the User Interface (UI) based on server responses.
     * Single-Page Application (SPA) elements are implemented on the index page for smooth, uninterrupted navigation between feeds and items, making the user experience more fluid.
  
 #### Bootstrap (Responsive User Interface):
@@ -47,7 +47,6 @@ The project builds on concepts from [CS50’s Web Programming with Python and Ja
 * The database stores user profiles, subscribed feeds, and the items associated with each feed, with Django ORM (Object-Relational Mapping) facilitating seamless database interactions.
 
 ## Understanding
-
 `feeds` is a web application that syndicates and aggregates RSS feed content. Below is an overview of the app’s architecture and functionality:
 
 * Back-End (Python & Django):
@@ -74,7 +73,6 @@ The project builds on concepts from [CS50’s Web Programming with Python and Ja
 This tech stack allows `feeds` to offer a responsive, secure, and scalable platform for users to manage their RSS subscriptions and interact with content in real time.
 
 ## Specification
-
 #### Input and Output:
 * Input: Users interact with the application via a web interface to create profiles, subscribe to feeds, and manage feed items.
     * Users provide information such as RSS feed URLs, profile descriptions, and preferences for feed visibility (public/private).
