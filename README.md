@@ -126,7 +126,7 @@ This tech stack allows `feeds` to offer a responsive, secure, and scalable platf
 * Edge Cases:
     * Invalid RSS Feeds: The app validates the RSS URL and displays an error if the feed cannot be parsed or if the URL is invalid.
     * Feed Ownership: Users can only edit, delete, or toggle visibility on their own feeds and profiles.
-    * Public/Private Feeds: Users can set their feeds as public or private. Public feeds are visible to all, while private feeds are only accessible by the feed’s owner.
+    * Public / Private Feeds: Users can set their feeds as public or private. Public feeds are visible to all, while private feeds are only accessible by the feed’s owner.
 
 * Performance Considerations:
     * Feeds are updated on a schedule, running in the background via separate threads to ensure the main application remains responsive. The database queries are optimized to ensure minimal latency during feed retrieval and updates.
