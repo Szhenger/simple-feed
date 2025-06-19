@@ -1,4 +1,4 @@
-# Simple Feed: A Minmal Web Feed
+# SimpleFeed: A Minmal Web Feed
 
 ## Description
 
