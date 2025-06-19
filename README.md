@@ -1,4 +1,4 @@
-# Simple Feeds
+# Simple Feed
 
 ## Description
 
