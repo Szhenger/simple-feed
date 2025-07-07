@@ -2,8 +2,6 @@
 
 This is **SimpleFeed**, a minimal RSS reader built with Python and Django that allows users to subscribe and manage custom web feeds. Users can explore, organize, and archive their favorite feeds—all from a clean web interface with automatic daily updates.
 
----
-
 ## Key Features
 
 - User authentication (register, login, logout)
@@ -15,8 +13,6 @@ This is **SimpleFeed**, a minimal RSS reader built with Python and Django that a
 - "Random Feed" explorer to discover public content
 - ⚙Admin integration for managing users, feeds, and entries
 
----
-
 ## Project Structure
 
 - `feeds/models.py` — Defines custom `User`, `Profile`, `Feed`, and `Item` models
@@ -27,5 +23,4 @@ This is **SimpleFeed**, a minimal RSS reader built with Python and Django that a
 - `templates/feeds/*.html` — Dynamic rendering with Django templates (not included here)
 - Background task runner in a dedicated thread for daily refresh (7:30 AM)
 
----
 
