@@ -21,12 +21,12 @@ def index_view(request):
         inactive_feeds = feeds.filter(is_active=False).order_by("id").reverse()
 
         # Render the feeds
-        return render(request, "feeds/index.html", {
+        return render(request, "feed/index.html", {
             "active_feeds": active_feeds,
             "inactive_feeds": inactive_feeds
         })
     else:
-        return render(request, "feeds/index.html")
+        return render(request, "feed/index.html")
 
 
 def register_view(request):
@@ -115,7 +115,7 @@ def profile_view(request, user_id):
 
     # Ensure that profile is public or the user is the owner of profile
     if profile.is_public == True or profile.user.id == request.user.id:
-        return render(request, "feeds/profile.html", {
+        return render(request, "feed/profile.html", {
             "profile": profile
         })
     else:
@@ -174,7 +174,7 @@ def feed_view(request, feed_id):
     # Returns feed only when the feed is public or user is the owner
     if feed.is_public == True or feed.user.id == request.user.id:
         items = Item.objects.filter(feed=feed).order_by("id").reverse()
-        return render(request, "feeds/feed.html", {
+        return render(request, "feed/feed.html", {
             "feed": feed,
             "items": items
         })
@@ -255,7 +255,7 @@ def item_view(request, item_id):
 
     # Ensures that the item returned is public or user is the owner
     if item.feed.is_public == True or item.feed.user.id == request.user.id:
-        return render(request, "feeds/item.html", {
+        return render(request, "feed/item.html", {
             "item": item
         })
     else:
@@ -280,7 +280,7 @@ def random_view(request):
         feed_id = choice(feed_ids)
         feed = Feed.objects.get(pk=feed_id)
         items = Item.objects.filter(feed=feed).order_by("id").reverse()
-        return render(request, "feeds/feed.html", {
+        return render(request, "feed/feed.html", {
             "feed": feed,
             "items": items
         })
