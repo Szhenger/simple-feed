@@ -15,12 +15,12 @@ This is **SimpleFeed**, a minimal RSS reader built with Python and Django that a
 
 ## Project Structure
 
-- `feeds/models.py` — Defines custom `User`, `Profile`, `Feed`, and `Item` models
-- `feeds/util.py` — Fetches/parses feeds using `feedparser` and stores items in the DB
-- `feeds/views.py` — Implements all core logic for feed and profile interaction
+- `feed/models.py` — Defines custom `User`, `Profile`, `Feed`, and `Item` models
+- `feed/util.py` — Fetches/parses feeds using `feedparser` and stores items in the DB
+- `feed/views.py` — Implements all core logic for feed and profile interaction
 - `feeds/urls.py` — Maps routes for the main app interface
-- `capstone/settings.py` — Configured for local SQLite dev + custom user model
-- `templates/feeds/*.html` — Dynamic rendering with Django templates (not included here)
+- `django/settings.py` — Configured for local SQLite dev + custom user model
+- `template/*.html` — Dynamic rendering with Django templates (not included here)
 - Background task runner in a dedicated thread for daily refresh (7:30 AM)
 
 
