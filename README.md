@@ -2,6 +2,8 @@
 
 This is **SimpleFeed**, a minimal RSS reader built with Python and Django that allows users to subscribe and manage custom web feeds. Users can explore, organize, and archive their favorite feeds—all from a clean web interface with automatic daily updates.
 
+Created and maintained under the SZ Laboratory of Programming — a personal initiative focused on systems-level compilers and infrastructure.
+
 ## Key Features
 
 - User authentication (register, login, logout)
