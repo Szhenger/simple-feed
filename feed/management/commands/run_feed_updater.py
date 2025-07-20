@@ -1,7 +1,7 @@
 # feed/management/commands/run_feed_updater.py
 
 from django.core.management.base import BaseCommand
-from feed.utils import update_feeds
+from feed.util import update_feeds
 
 class Command(BaseCommand):
     help = 'Runs the feed updater to fetch and store RSS content'
