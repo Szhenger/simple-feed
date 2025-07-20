@@ -2,3 +2,5 @@ feedparser
 schedule
 gunicorn
 dj_database_url
+psycopg
+
