@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-vm=c!wnhdtph0ss2b*y!)3_zc-^2b-m6)a=t+-($vz$^lvdpm$
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    os.environ.get("RENDER_EXTERNAL_HOSTNAME", "localhost"),
+    "simplefeed-web.onrender.com",
     "127.0.0.1",
     "localhost"
 ]
