@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: simplefeed-web
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn simple.wsgi:application --bind 0.0.0.0:10000
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - fromDatabase:
+          name: simplefeed-db
+          property: connectionString
+          key: DATABASE_URL
+
+  - type: worker
+    name: simplefeed-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py run_feed_updater
+    envVars:
+      - fromDatabase:
+          name: simplefeed-db
+          property: connectionString
+          key: DATABASE_URL
+      - key: SECRET_KEY
+        sync: false
+
+databases:
+  - name: simplefeed-db
+    plan: free
