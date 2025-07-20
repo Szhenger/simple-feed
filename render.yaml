@@ -27,14 +27,9 @@ services:
       - key: SECRET_KEY
         sync: false
 
-envVars:
-  - fromDatabase:
-      name: simplefeed-db
-      property: connectionString
-      key: DATABASE_URL
-
 databases:
   - name: simplefeed-db
     plan: free
+
 
 
