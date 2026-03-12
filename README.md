@@ -1,4 +1,4 @@
-# SimpleFeed: A Minimal Web Feed
+# SimpleFeed: A Distributed Web Feed
 
 This is **SimpleFeed**, a minimal RSS reader built with Python and Django that allows users to subscribe and manage custom web feeds. Users can explore, organize, and archive their favorite feeds—all from a clean web interface with automatic daily updates.
 
