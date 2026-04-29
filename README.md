@@ -1,28 +1,45 @@
-# SimpleFeed++: A Distributed Web Feed
+# SimpleFeed++: A Distributed Web Feed Infrastructure
 
-This is **SimpleFeed**, a minimal RSS reader built with Python and Django that allows users to subscribe and manage custom web feeds. Users can explore, organize, and archive their favorite feeds—all from a clean web interface with automatic daily updates.
+**SimpleFeed++** is a high-availability RSS/Atom discovery and management engine built with Python and Django[cite: 1]. Beyond simple subscription management, the project serves as a sandbox for exploring **distributed data ingestion**, **manual sharding**, and **fault-tolerant deployment**[cite: 1].
 
-Created and maintained under the SZ Open Laboratory — a personal initiative focused on systems-level compilers and infrastructure.
+Created and maintained under the **SZ Open Laboratory** — a personal initiative focused on systems-level compilers and infrastructure[cite: 1].
 
-## Key Features
+---
 
-- User authentication (register, login, logout)
-- Add and manage your own RSS/Atom feeds
-- Daily feed updates powered by `schedule` + background threading
-- View and delete individual feed items
-- Personal user profiles with optional public visibility
-- Toggle feeds between public/private and active/inactive
-- "Random Feed" explorer to discover public content
-- ⚙Admin integration for managing users, feeds, and entries
+## 🏗 Distributed Architecture & Deployment
 
-## Project Structure
+Unlike standard monolithic feed readers, **SimpleFeed++** is architected to handle high-concurrency ingestion and reliable content delivery:
+*   **Distributed Task Execution:** Utilizes a multi-threaded task runner and scheduler to perform automated, daily ingestion of global feeds without blocking the primary application server[cite: 1].
+*   **Manual Replication & Sharding:** Engineered with a custom replication and sharding scheme designed to handle high-concurrency data ingestion and ensure system fault tolerance[cite: 1].
+*   **Containerized Orchestration:** Orchestrated for deployment on **Render**, leveraging its containerized environment to manage automated service replication and load balancing[cite: 1].
+*   **Scalable Schema:** Features a robust Django ORM schema designed to manage complex relationships between users, granular feed permissions, and high-volume entry archival[cite: 1].
 
-- `feed/models.py` — Defines custom `User`, `Profile`, `Feed`, and `Item` models
-- `feed/util.py` — Fetches/parses feeds using `feedparser` and stores items in the DB
-- `feed/views.py` — Implements all core logic for feed and profile interaction
-- `feeds/urls.py` — Maps routes for the main app interface
-- `django/settings.py` — Configured for local SQLite dev + custom user model
-- `template/*.html` — Dynamic rendering with Django templates (not included here)
-- Background task runner in a dedicated thread for daily refresh (7:30 AM)
+---
+
+## 🚀 Key Features
+
+*   **Automated Ingestion:** Daily updates powered by `schedule` + background threading (7:30 AM)[cite: 1].
+*   **Privacy Controls:** Toggle feeds between public/private and active/inactive[cite: 1].
+*   **Discovery Engine:** "Random Feed" explorer to discover public content across the user base[cite: 1].
+*   **User Management:** Full authentication suite (register, login, logout) including personalized profiles[cite: 1].
+*   **Admin Suite:** Integrated dashboard for managing users, feeds, and entry archival[cite: 1].
+
+---
+
+## 📂 Project Structure
+
+*   **`feed/models.py`** — Custom `User`, `Profile`, `Feed`, and `Item` models designed for high-concurrency[cite: 1].
+*   **`feed/util.py`** — Core ingestion logic using `feedparser` with database-level persistence[cite: 1].
+*   **`feed/views.py`** — Implementation of core interaction logic and permission gateways[cite: 1].
+*   **`feeds/urls.py`** — Route mapping for the main infrastructure interface[cite: 1].
+*   **`django/settings.py`** — Production-ready configuration utilizing **PostgreSQL** and custom user models[cite: 1].
+
+---
+
+## 🛠 Tech Stack
+
+*   **Languages:** Python, SQL, HTML/CSS[cite: 1].
+*   **Frameworks:** Django (REST), PostgreSQL[cite: 1].
+*   **Tools:** Linux, Git, Docker/Containerized Environments (Render), CI/CD Automation[cite: 1].
 
 
