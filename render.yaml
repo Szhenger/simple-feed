@@ -1,36 +1,158 @@
 services:
+  # ── Web ─────────────────────────────────────────────────────────────────────
   - type: web
     name: simplefeed-web
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn simple.wsgi:application --bind 0.0.0.0:10000
     envVars:
-      - key: DEBUG
-        value: "False"
-      - key: SECRET_KEY
+      - key: DJANGO_DEBUG
+        value: "false"
+
+      - key: DJANGO_SECRET_KEY
         generateValue: true
+
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "simplefeed-web.onrender.com,127.0.0.1,localhost"
+
+      - key: DJANGO_SHARD_COUNT
+        value: "3"
+
+      - key: REPLICA_READ_PROBABILITY
+        value: "0.8"
+
+      - key: DB_CONN_MAX_AGE
+        value: "60"
+
+      # Default DB — Django internals (auth, sessions, admin)
       - key: DATABASE_URL
         fromDatabase:
-          name: simplefeed-db
+          name: simplefeed-db-default
           property: connectionString
 
+      # Shard 0
+      - key: DB_SHARD_0_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-0
+          property: host
+      - key: DB_SHARD_0_NAME
+        fromDatabase:
+          name: simplefeed-db-shard-0
+          property: database
+      - key: DB_SHARD_0_REPLICA_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-0-replica
+          property: host
+
+      # Shard 1
+      - key: DB_SHARD_1_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-1
+          property: host
+      - key: DB_SHARD_1_NAME
+        fromDatabase:
+          name: simplefeed-db-shard-1
+          property: database
+      - key: DB_SHARD_1_REPLICA_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-1-replica
+          property: host
+
+      # Shard 2
+      - key: DB_SHARD_2_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-2
+          property: host
+      - key: DB_SHARD_2_NAME
+        fromDatabase:
+          name: simplefeed-db-shard-2
+          property: database
+      - key: DB_SHARD_2_REPLICA_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-2-replica
+          property: host
+
+  # ── Background worker ────────────────────────────────────────────────────────
   - type: worker
     name: simplefeed-worker
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python manage.py run_feed_updater
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: simplefeed-db
-          property: connectionString
-      - key: SECRET_KEY
+      - key: DJANGO_SECRET_KEY
         sync: false
 
+      - key: DJANGO_SHARD_COUNT
+        value: "3"
+
+      - key: REPLICA_READ_PROBABILITY
+        value: "0.0"           # workers always read from primaries — no replica lag risk
+
+      - key: DB_CONN_MAX_AGE
+        value: "60"
+
+      - key: DATABASE_URL
+        fromDatabase:
+          name: simplefeed-db-default
+          property: connectionString
+
+      - key: DB_SHARD_0_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-0
+          property: host
+      - key: DB_SHARD_0_NAME
+        fromDatabase:
+          name: simplefeed-db-shard-0
+          property: database
+      - key: DB_SHARD_0_REPLICA_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-0-replica
+          property: host
+
+      - key: DB_SHARD_1_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-1
+          property: host
+      - key: DB_SHARD_1_NAME
+        fromDatabase:
+          name: simplefeed-db-shard-1
+          property: database
+      - key: DB_SHARD_1_REPLICA_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-1-replica
+          property: host
+
+      - key: DB_SHARD_2_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-2
+          property: host
+      - key: DB_SHARD_2_NAME
+        fromDatabase:
+          name: simplefeed-db-shard-2
+          property: database
+      - key: DB_SHARD_2_REPLICA_HOST
+        fromDatabase:
+          name: simplefeed-db-shard-2-replica
+          property: host
+
 databases:
-  - name: simplefeed-db
-    plan: free
+  # Default — Django internals only (auth, sessions, admin, contenttypes)
+  - name: simplefeed-db-default
+    plan: starter
 
+  # Shard primaries
+  - name: simplefeed-db-shard-0
+    plan: starter
+  - name: simplefeed-db-shard-1
+    plan: starter
+  - name: simplefeed-db-shard-2
+    plan: starter
 
-
+  # Read replicas (Render provisions these as separate DB instances)
+  - name: simplefeed-db-shard-0-replica
+    plan: starter
+  - name: simplefeed-db-shard-1-replica
+    plan: starter
+  - name: simplefeed-db-shard-2-replica
+    plan: starter
 
