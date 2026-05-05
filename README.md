@@ -38,7 +38,7 @@ Unlike standard monolithic feed readers, **SimpleFeed++** is architected to hand
 
 ## 🛠 Tech Stack
 
-*   **Languages:** Python, SQL, HTML/CSS.
+*   **Languages:** Python, JavaScript, SQL, HTML/CSS.
 *   **Frameworks:** Django (REST), PostgreSQL.
 *   **Tools:** Linux, Git, Docker/Containerized Environments (Render), CI/CD Automation.
 
