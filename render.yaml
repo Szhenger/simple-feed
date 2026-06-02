@@ -1,139 +1,52 @@
 services:
-  # ── Web ─────────────────────────────────────────────────────────────────────
+  # ── Frontend (Static Site) ───────────────────────────────────────────────────
+  - type: static
+    name: simplefeed-frontend
+    buildCommand: "npm install && npm run build"
+    publishPath: "frontend/dist" # Adjust if your Vite config differs
+    staticPublishPath: "./"
+
+  # ── Web (Django API) ─────────────────────────────────────────────────────────
   - type: web
     name: simplefeed-web
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn simple.wsgi:application --bind 0.0.0.0:10000
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:10000"
     envVars:
       - key: DJANGO_DEBUG
         value: "false"
-
       - key: DJANGO_SECRET_KEY
         generateValue: true
-
-      - key: DJANGO_ALLOWED_HOSTS
-        value: "simplefeed-web.onrender.com,127.0.0.1,localhost"
-
-      - key: DJANGO_SHARD_COUNT
-        value: "3"
-
-      - key: REPLICA_READ_PROBABILITY
-        value: "0.8"
-
-      - key: DB_CONN_MAX_AGE
-        value: "60"
-
-      # Default DB — Django internals (auth, sessions, admin)
-      - key: DATABASE_URL
-        fromDatabase:
-          name: simplefeed-db-default
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: simplefeed-redis
           property: connectionString
+      # ... [Keep your existing Shard DB EnvVars here] ...
 
-      # Shard 0
-      - key: DB_SHARD_0_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-0
-          property: host
-      - key: DB_SHARD_0_NAME
-        fromDatabase:
-          name: simplefeed-db-shard-0
-          property: database
-      - key: DB_SHARD_0_REPLICA_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-0-replica
-          property: host
-
-      # Shard 1
-      - key: DB_SHARD_1_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-1
-          property: host
-      - key: DB_SHARD_1_NAME
-        fromDatabase:
-          name: simplefeed-db-shard-1
-          property: database
-      - key: DB_SHARD_1_REPLICA_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-1-replica
-          property: host
-
-      # Shard 2
-      - key: DB_SHARD_2_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-2
-          property: host
-      - key: DB_SHARD_2_NAME
-        fromDatabase:
-          name: simplefeed-db-shard-2
-          property: database
-      - key: DB_SHARD_2_REPLICA_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-2-replica
-          property: host
-
-  # ── Background worker ────────────────────────────────────────────────────────
+  # ── Background Worker (Celery Fleet) ─────────────────────────────────────────
   - type: worker
     name: simplefeed-worker
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python manage.py run_feed_updater
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "celery -A config worker --loglevel=info"
     envVars:
       - key: DJANGO_SECRET_KEY
         sync: false
-
-      - key: DJANGO_SHARD_COUNT
-        value: "3"
-
-      - key: REPLICA_READ_PROBABILITY
-        value: "0.0"           # workers always read from primaries — no replica lag risk
-
-      - key: DB_CONN_MAX_AGE
-        value: "60"
-
-      - key: DATABASE_URL
-        fromDatabase:
-          name: simplefeed-db-default
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: simplefeed-redis
           property: connectionString
+      - key: REPLICA_READ_PROBABILITY
+        value: "0.0" 
+      # ... [Keep your existing Shard DB EnvVars here] ...
 
-      - key: DB_SHARD_0_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-0
-          property: host
-      - key: DB_SHARD_0_NAME
-        fromDatabase:
-          name: simplefeed-db-shard-0
-          property: database
-      - key: DB_SHARD_0_REPLICA_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-0-replica
-          property: host
-
-      - key: DB_SHARD_1_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-1
-          property: host
-      - key: DB_SHARD_1_NAME
-        fromDatabase:
-          name: simplefeed-db-shard-1
-          property: database
-      - key: DB_SHARD_1_REPLICA_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-1-replica
-          property: host
-
-      - key: DB_SHARD_2_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-2
-          property: host
-      - key: DB_SHARD_2_NAME
-        fromDatabase:
-          name: simplefeed-db-shard-2
-          property: database
-      - key: DB_SHARD_2_REPLICA_HOST
-        fromDatabase:
-          name: simplefeed-db-shard-2-replica
-          property: host
+  # ── Redis (Broker & Lock Manager) ──────────────────────────────────────────
+  - type: redis
+    name: simplefeed-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
 
 databases:
   # Default — Django internals only (auth, sessions, admin, contenttypes)
@@ -148,11 +61,10 @@ databases:
   - name: simplefeed-db-shard-2
     plan: starter
 
-  # Read replicas (Render provisions these as separate DB instances)
+  # Read replicas
   - name: simplefeed-db-shard-0-replica
     plan: starter
   - name: simplefeed-db-shard-1-replica
     plan: starter
   - name: simplefeed-db-shard-2-replica
     plan: starter
-
