@@ -1,6 +1,6 @@
 # SimpleFeed++ Backend Architecture Documentation
 
-**Location:** `/backend`  
+**Location:** `backend/`  
 **Stack:** Python 3.11+, Django REST Framework, Celery, PostgreSQL 16, Redis
 
 This document outlines the architectural constraints for the SimpleFeed++ backend. In this system, the backend is not a monolithic controller, but a **stateless API gateway** and a **distributed orchestration layer** for high-throughput feed synthesis.
