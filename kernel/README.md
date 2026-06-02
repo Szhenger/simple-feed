@@ -1,6 +1,6 @@
 # SimpleFeed++ Native Kernel Documentation
 
-**Location:** `/kernel`  
+**Location:** `kernel/`  
 **Stack:** C++20, CMake, SIMD (AVX-512/NEON), FFI (PyBind11)
 
 This directory houses the bare-metal ingestion core of SimpleFeed++. By offloading XML/Atom parsing, date-time normalization, and string tokenization to a native C++20 layer, we bypass the Python Global Interpreter Lock (GIL) and achieve throughput levels unattainable in pure Python environments.
