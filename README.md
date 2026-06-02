@@ -128,7 +128,7 @@ simple-feed/
 ├── kernel/                      # Native bare-metal execution optimization
 │   ├── CMakeLists.txt
 │   ├── include/parser.hpp       # High-efficiency C++ tokenization definitions
-│   └── src/parser.cpp           # SIMD AVX-512 optimized XML extraction
+│   └── source/parser.cpp           # SIMD AVX-512 optimized XML extraction
 └── docker-compose.yml           # Local orchestration for Frontend, Backend, Redis, Postgres
 ```
 
