@@ -1,6 +1,6 @@
 # SimpleFeed++ Frontend Architecture Documentation
 
-**Location:** `/frontend`  
+**Location:** `frontend/`  
 **Stack:** React 18, TypeScript (Strict Mode), Vite, TanStack Query, React Virtual  
 
 This document outlines the architectural boundaries, state management philosophy, and component design patterns for the SimpleFeed++ client application. 
