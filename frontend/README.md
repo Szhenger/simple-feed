@@ -41,6 +41,24 @@ Rendering long lists of data destroys client performance. We utilize `react-virt
 
 ---
 
+## 🛡️ Security Architecture & Zero-Trust UI
+
+Because SimpleFeed++ operates across a multi-tenant, sharded database architecture, the frontend implements a strict Zero-Trust security model to prevent cross-tenant data leakage and physical session hijacking.
+
+### 1. Cross-Tenant Cache Poisoning Defense
+Standard React Query implementations are vulnerable to cache leakage when switching contexts. We mathematically isolate memory by injecting the `activeWorkspaceId` into every TanStack query key array (e.g., `['feedItems', activeWorkspaceId, axiom]`). If the active database shard changes, the local memory context is instantly rendered invalid and unreachable.
+
+### 2. The Global Kill Switch & Session Daemon
+The Zustand `authStore` operates a passive background daemon monitoring DOM interaction. If 15 minutes of idle inactivity pass, it triggers an `IDLE_TIMEOUT` state. This fires a global `sz_memory_purge` browser event, commanding all local stores to self-destruct their ephemeral state and permanently clearing the React Query network cache.
+
+### 3. Step-Up Authentication (Sudo Mode)
+For destructive or highly privileged actions (such as mutating the `pgvector` index threshold or altering infrastructure telemetry), the UI intentionally aborts standard API calls. It mounts a strict `SudoModal` overlay, requiring the user to physically re-sign the transaction intent with their cryptographic passphrase, neutralizing walk-away session hijacking vectors.
+
+### 4. RLS API Gateway Boundary
+The Axios client intercepts all outbound network requests to seamlessly inject the `X-Workspace-ID` header. This explicitly informs the Django backend's Row-Level Security (RLS) policies which PostgreSQL shard partition the user is requesting, rejecting out-of-bounds memory access before it evaluates the Python application logic.
+
+---
+
 ## 📂 Directory Structure
 
 ```text
