@@ -75,6 +75,12 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_WORKER_CONCURRENCY = int(os.environ.get('CELERY_CONCURRENCY', 8))
+CELERY_BEAT_SCHEDULE = {
+    'dispatch-due-feeds-every-minute': {
+        'task': 'workers.tasks.sweep_due_feeds',
+        'schedule': 60.0, # Execute once a minute
+    },
+}
 
 # Stateless API Gateway Configuration (DRF)
 REST_FRAMEWORK = {
@@ -88,6 +94,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 50,
 }
+
+
 
 # JWT Authentication Configuration
 SIMPLE_JWT = {
