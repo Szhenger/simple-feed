@@ -1,4 +1,4 @@
-#include "scanner.hpp"
+#include "scanner.h"
 #include <immintrin.h>
 
 namespace simplefeed::simd {
