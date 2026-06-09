@@ -1,20 +1,40 @@
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Layout } from './components/common/Layout';
-import { WorkspaceBoard } from './components/workspace/WorkspaceBoard';
+import React, { useState } from 'react';
+import Sidebar from './components/Sidebar';
+import ArchitectureDoc from './pages/ArchitectureDoc';
+import VectorMetrics from './pages/VectorMetrics';
+// import KanbanBoard from './pages/KanbanBoard';
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { refetchOnWindowFocus: false } },
-});
+export default function App() {
+  // Simple state-based routing for demonstration
+  const [activeView, setActiveView] = useState<'doc' | 'metrics' | 'board'>('doc');
 
-export const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Layout>
-        <WorkspaceBoard />
-      </Layout>
-    </QueryClientProvider>
-  );
-};
+    <div className="notion-app-container">
+      <Sidebar activeView={activeView} setActiveView={setActiveView} />
+      
+      <main className="notion-main">
+        {/* Sticky Top Header */}
+        <header className="notion-header">
+          <div className="breadcrumbs">
+            <span className="crumb">Workspaces</span>
+            <span className="divider">/</span>
+            <span className="crumb current">
+              {activeView === 'doc' && 'Engineering Architecture'}
+              {activeView === 'metrics' && 'Vector Metrics'}
+              {activeView === 'board' && 'Triage Board'}
+            </span>
+          </div>
+          <div className="header-actions">
+            <button className="btn-action">Share</button>
+            <button className="btn-action">Edited just now</button>
+          </div>
+        </header>
 
-export default App;
+        {/* Dynamic View Rendering */}
+        {activeView === 'doc' && <ArchitectureDoc />}
+        {activeView === 'metrics' && <VectorMetrics />}
+        {/* {activeView === 'board' && <KanbanBoard />} */}
+      </main>
+    </div>
+  );
+}
