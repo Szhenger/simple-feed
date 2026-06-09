@@ -1,4 +1,4 @@
-# Hardware Abstractions in the C++20 Kernel
+# SimpleFeed++ Hardware in the C++20 Kernel
 
 **Document Owner:** Core Engineering 
 **System:** SimpleFeed++ FFI Syndication Kernel  
