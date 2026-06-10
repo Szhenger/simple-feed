@@ -1,0 +1,89 @@
+name: SimpleFeed++ Validation Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  # ==========================================
+  # STAGE 1: NATIVE KERNEL (C++ / GoogleTest)
+  # ==========================================
+  test-kernel:
+    name: Native AVX-512 Kernel Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Toolchain (CMake & GCC)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ build-essential
+
+      - name: Build GoogleTest Harness
+        run: |
+          mkdir -p backend/kernel/build
+          cd backend/kernel/build
+          cmake ../tests
+          make -j$(nproc)
+
+      - name: Execute Kernel Matrix
+        run: ./backend/kernel/build/kernel_tests
+
+  # ==========================================
+  # STAGE 2: BACKEND (Python / Pytest / Docker)
+  # ==========================================
+  test-backend:
+    name: Django API & Celery Workers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Docker Compose
+        run: sudo apt-get install -y docker-compose
+
+      - name: Run Ephemeral Testing Environment
+        # This spins up Postgres/Redis, runs Pytest, and tears everything down automatically
+        run: |
+          docker-compose -f docker-compose.test.yml build
+          docker-compose -f docker-compose.test.yml run --rm test-backend
+      
+      - name: Teardown Infrastructure
+        if: always()
+        run: docker-compose -f docker-compose.test.yml down -v
+
+  # ==========================================
+  # STAGE 3: FRONTEND (React / Vitest / Playwright)
+  # ==========================================
+  test-frontend:
+    name: React Workspace UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Execute Component Unit Tests (Vitest)
+        working-directory: ./frontend
+        run: npm run test -- --run
+
+      - name: Install Playwright Browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Execute E2E Edge Cases (Playwright)
+        working-directory: ./frontend
+        run: npx playwright test
