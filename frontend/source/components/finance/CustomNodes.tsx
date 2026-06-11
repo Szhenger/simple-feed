@@ -45,6 +45,8 @@ export function QuantNode({ data }: { data: any }) {
 
 // --- 3. THE AI QUALITATIVE NODE ---
 export function AINode({ data }: { data: any }) {
+  const [hasCustomText, setHasCustomText] = React.useState(!!data.prompt);
+
   return (
     <div className="notion-node ai-node" style={nodeStyle('#0b6b43')}>
       <Handle type="target" position={Position.Left} style={handleStyle} />
@@ -52,15 +54,20 @@ export function AINode({ data }: { data: any }) {
       <div style={{ padding: '10px' }}>
         <textarea 
           defaultValue={data.prompt} 
+          onChange={(e) => setHasCustomText(e.target.value.trim().length > 0)}
           rows={3} 
-          placeholder="Enter LLM systemic directive..."
+          placeholder="Empty: System will automatically inject institutional asset-class defaults..."
           style={{ ...inputStyle, resize: 'none', height: '60px' }}
         />
+        {!hasCustomText && (
+          <div style={{ fontSize: '10px', color: '#0b6b43', marginTop: '4px', fontStyle: 'italic' }}>
+            ✨ Adaptive Market Defaults Engaged
+          </div>
+        )}
       </div>
       <Handle type="source" position={Position.Right} style={handleStyle} />
     </div>
   );
-}
 
 // --- SHARED STYLES (To mimic Notion's clean borders) ---
 const nodeStyle = (borderColor: string): React.CSSProperties => ({
