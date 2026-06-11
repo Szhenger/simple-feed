@@ -1,72 +1,66 @@
-import logging
+import operator
 from celery import shared_task
-from typing import Dict, Any
-
-# Mock internal modules
+from finance.models import HybridStrategy
 from finance.data_feeds import get_price_data, get_recent_news
 from finance.math import calculate_z_score
 from ai.llm_client import FrontierModelClient
-from notifications.push import dispatch_alert
 
-logger = logging.getLogger(__name__)
+# Map string operators from the JSON payload to actual Python math operations
+OPERATOR_MAP = {
+    '<': operator.lt,
+    '>': operator.gt,
+    '<=': operator.le,
+    '>=': operator.ge,
+    '==': operator.eq
+}
 
 @shared_task
-def evaluate_hybrid_strategy(strategy_id: str, asset_ticker: str, ai_prompt: str):
-    """
-    Executes a two-phase strategy evaluation for a user.
-    Phase 1: Deterministic Quantitative Math.
-    Phase 2: Qualitative LLM Contextualization.
-    """
-    logger.info(f"Initiating hybrid evaluation for {asset_ticker}")
+def process_active_strategy(strategy_id: str):
+    strategy = HybridStrategy.objects.get(id=strategy_id)
+    pipeline = strategy.execution_pipeline
+    
+    ticker = pipeline['ticker']
+    quant = pipeline['quant_rule']
+    ai = pipeline['ai_rule']
+    
+    # ---------------------------------------------------------
+    # PHASE 1: Dynamic Quantitative Math
+    # ---------------------------------------------------------
+    prices = get_price_data(ticker, window_days=20)
+    
+    # Dynamically select the math routing based on the visual node
+    if quant['indicator'] == 'Z_SCORE':
+        current_metric = calculate_z_score(prices)
+    else:
+        # Fallback/Placeholder for RSI, MACD, etc.
+        current_metric = 0.0 
+        
+    # Evaluate the threshold using Python's operator module mapping
+    # e.g., operator.lt(current_z_score, -2.0)
+    compare_func = OPERATOR_MAP.get(quant['operator'], operator.lt)
+    
+    if not compare_func(current_metric, quant['value']):
+        return {"status": "quant_failed"}
 
     # ---------------------------------------------------------
-    # PHASE 1: The Quant Layer (Fast, Deterministic)
+    # PHASE 2: AI Contextualization (Triggered)
     # ---------------------------------------------------------
-    prices = get_price_data(asset_ticker, window_days=20)
-    current_price = prices[-1]
-    
-    # Calculate the Z-Score to check for statistical deviations
-    z_score = calculate_z_score(prices)
-    
-    if z_score >= -2.0:
-        logger.info(f"Quant criteria not met for {asset_ticker} (Z: {z_score:.2f}). Halting.")
-        return {"status": "quant_failed", "z_score": z_score}
-
-    logger.warning(f"Quant boundary breached for {asset_ticker}. Fetching context for AI.")
-
-    # ---------------------------------------------------------
-    # PHASE 2: The Qualitative AI Layer (Slower, Contextual)
-    # ---------------------------------------------------------
-    # Fetch the last 24 hours of news/SEC filings to provide context to the LLM
-    market_context = get_recent_news(asset_ticker, hours=24)
-    
+    market_context = get_recent_news(ticker, hours=24)
     llm = FrontierModelClient()
     
-    # We construct a strict system prompt to force the LLM to act as an analyst,
-    # injecting Brick's specific user-defined rule.
     system_directive = f"""
-    You are a quantitative financial analyst. 
-    The asset {asset_ticker} has experienced a 2-sigma drop (Z-score: {z_score:.2f}).
-    Review the following market context and answer the user's specific query.
+    The asset {ticker} triggered a {quant['indicator']} alert at {current_metric:.2f}.
+    Review the market context and answer this directive: "{ai['prompt']}"
     
-    User Query: "{ai_prompt}"
-    
-    Respond strictly in JSON format: {{"trigger_alert": boolean, "rationale": "string"}}
+    Respond strictly in JSON: {{"trigger_alert": boolean, "rationale": "string"}}
     """
     
-    ai_decision = llm.evaluate_sentiment(system_directive, context=market_context)
+    decision = llm.evaluate_sentiment(system_directive, context=market_context)
     
-    # ---------------------------------------------------------
-    # PHASE 3: Independent Execution Handoff
-    # ---------------------------------------------------------
-    if ai_decision.get("trigger_alert"):
-        message = (
-            f"🚨 STRATEGY TRIGGER: {asset_ticker}\n"
-            f"Math: Z-Score hit {z_score:.2f}.\n"
-            f"AI Analysis: {ai_decision['rationale']}\n"
-            f"Action: Ready for your manual review and execution."
-        )
-        dispatch_alert(user_id="brick_med_student", payload=message)
-        return {"status": "alert_dispatched", "rationale": ai_decision['rationale']}
-    
-    return {"status": "ai_rejected", "rationale": ai_decision['rationale']}
+    if decision.get("trigger_alert"):
+        # Alert the user and update the database timestamp
+        strategy.last_triggered_at = timezone.now()
+        strategy.save(update_fields=['last_triggered_at'])
+        # dispatch_alert(...)
+        
+    return {"status": "completed", "action_taken": decision.get("trigger_alert")}
