@@ -2,8 +2,13 @@ import operator
 from celery import shared_task
 from finance.models import HybridStrategy
 from finance.data_feeds import get_price_data, get_recent_news
-from finance.math import calculate_z_score
 from ai.llm_client import FrontierModelClient
+from kernel.client import NativeQuantEngine
+
+# Inside process_active_strategy():
+if quant['indicator'] == 'Z_SCORE':
+    # Now evaluating 16 prices per clock cycle in C++ before returning the boolean
+    current_metric = NativeQuantEngine.calculate_z_score(prices)
 
 # Map string operators from the JSON payload to actual Python math operations
 OPERATOR_MAP = {
